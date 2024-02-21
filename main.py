@@ -14,28 +14,22 @@ play_button_rect = play_button.get_rect(center=(-200, height // 2 + 100))  # Sta
 quit_button = pygame.image.load("img/quit.png")  # Load quit button image
 quit_button_original = quit_button.copy()
 quit_button_rect = quit_button.get_rect(center=(width + 200, height // 2 + 300))  # Start quit button off the right side of the screen
-home_button = pygame.image.load("img/home.png")  # Load home button image
-home_button_original = home_button.copy()
-home_button_rect = home_button.get_rect(topright=(width - 5, 1))  # Position home button at the top right corner
 
 pygame.display.set_caption('WORDWHIZ')
 pygame.display.set_icon(icon)
 
-def scale_button(button, factor):
-    """Scale the button image by a factor."""
+def scale_button(button, factor): #scale buttons
     button_rect = button.get_rect(center=button_rect.center)
     return pygame.transform.scale(button, (int(button_rect.width * factor), int(button_rect.height * factor)))
 
 def mode1():
-    """Function to switch to mode1 image."""
     mode1_image = pygame.image.load("img/mode1.png")
     screen.blit(mode1_image, mode1_image.get_rect(center=(width // 2, height // 2)))
-    screen.blit(home_button, home_button_rect)  # Blit home button
     pygame.display.update()
 
 # Initial state
 current_screen = "main"
-play_button_speed = 5  # Adjust speed as needed
+play_button_speed = 5  # Adjust speed 
 quit_button_speed = 5
 
 while True:
@@ -49,8 +43,6 @@ while True:
             elif current_screen == "main" and quit_button_rect.collidepoint(event.pos):
                 pygame.quit()
                 sys.exit()
-            elif current_screen == "mode1" and home_button_rect.collidepoint(event.pos):
-                current_screen = "main"
 
     screen.blit(background, (0, 0))  # Draw the background image
 
