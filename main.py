@@ -14,17 +14,51 @@ play_button_rect = play_button.get_rect(center=(-200, height // 2 + 100))  # Sta
 quit_button = pygame.image.load("img/quit.png")  # Load quit button image
 quit_button_original = quit_button.copy()
 quit_button_rect = quit_button.get_rect(center=(width + 200, height // 2 + 300))  # Start quit button off the right side of the screen
+home_button = pygame.image.load("img/home2.png")  # Load home button image
+home_button_original = home_button.copy()
+home_button_rect = home_button.get_rect(topright=(width - (-60), -90))  # Position home button at the top right corner
+mode1_button = pygame.image.load("img/mode1bttn.png")  # Load mode1 button image
+mode1_button_original = mode1_button.copy()
+mode2_button = pygame.image.load("img/mode2bttn.png")  # Load mode2 button image
+mode2_button_original = mode2_button.copy()
+home1_button = pygame.image.load("img/home1.png")  # Load home1 button image
+home1_button_original = home1_button.copy()
 
 pygame.display.set_caption('WORDWHIZ')
 pygame.display.set_icon(icon)
 
-def scale_button(button, factor): #scale buttons
+def scale_button(button, factor):
+    """Scale the button image by a factor."""
     button_rect = button.get_rect(center=button_rect.center)
     return pygame.transform.scale(button, (int(button_rect.width * factor), int(button_rect.height * factor)))
 
 def mode1():
+    """Function to switch to mode1 image."""
     mode1_image = pygame.image.load("img/mode1.png")
     screen.blit(mode1_image, mode1_image.get_rect(center=(width // 2, height // 2)))
+    screen.blit(home_button, home_button_rect)  # Blit home button
+    pygame.display.update()
+
+def mode2():
+    """Function to switch to mode2 image."""
+    mode2_image = pygame.image.load("img/mode2.png")
+    screen.blit(mode2_image, mode2_image.get_rect(center=(width // 2, height // 2)))
+    screen.blit(home_button, home_button_rect)  # Blit home button
+    pygame.display.update()
+
+def modescreen():
+    """Function to display the mode screen."""
+    screen.blit(background, (0, 0))
+    # Calculate vertical spacing between buttons
+    button_spacing = 50
+    # Calculate initial y-coordinate for the first button
+    initial_y = height // 2 - 50
+    # Blit mode1 button
+    screen.blit(mode1_button, mode1_button.get_rect(center=(width // 2, initial_y)))
+    # Blit mode2 button
+    screen.blit(mode2_button, mode2_button.get_rect(center=(width // 2, initial_y + button_spacing)))
+    # Blit home1 button
+    screen.blit(home1_button, home1_button.get_rect(center=(width // 2, initial_y + 2 * button_spacing)))
     pygame.display.update()
 
 # Initial state
@@ -39,10 +73,16 @@ while True:
             sys.exit()
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if current_screen == "main" and play_button_rect.collidepoint(event.pos):
-                current_screen = "mode1"
-            elif current_screen == "main" and quit_button_rect.collidepoint(event.pos):
-                pygame.quit()
-                sys.exit()
+                current_screen = "modescreen"  # Change current screen to modescreen
+            elif current_screen == "modescreen":
+                if mode1_button_rect.collidepoint(event.pos):
+                    current_screen = "mode1"  # Proceed to mode1
+                elif mode2_button_rect.collidepoint(event.pos):
+                    current_screen = "mode2"  # Proceed to mode2
+                elif home1_button_rect.collidepoint(event.pos):
+                    current_screen = "main"  # Go back to main screen
+            elif current_screen == "mode1" and home_button_rect.collidepoint(event.pos):
+                current_screen = "main"
 
     screen.blit(background, (0, 0))  # Draw the background image
 
@@ -53,7 +93,11 @@ while True:
             quit_button_rect.centerx -= quit_button_speed
         screen.blit(play_button, play_button_rect)  # Blit play button
         screen.blit(quit_button, quit_button_rect)  # Blit quit button
+    elif current_screen == "modescreen":
+        modescreen()
     elif current_screen == "mode1":
         mode1()
+    elif current_screen == "mode2":
+        mode2()
 
     pygame.display.update()
