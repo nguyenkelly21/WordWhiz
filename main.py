@@ -46,20 +46,34 @@ def mode2():
     screen.blit(home_button, home_button_rect)  # Blit home button
     pygame.display.update()
 
+
 def modescreen():
     """Function to display the mode screen."""
     screen.blit(background, (0, 0))
+
+    # Define global variables for rect objects to enable collision detection
+    global mode1_button_rect, mode2_button_rect, home1_button_rect
+
     # Calculate vertical spacing between buttons
-    button_spacing = 50
+    button_spacing = 50 
+
     # Calculate initial y-coordinate for the first button
-    initial_y = height // 2 - 50
+    initial_y = height // 2
+
     # Blit mode1 button
-    screen.blit(mode1_button, mode1_button.get_rect(center=(width // 2, initial_y)))
+    mode1_button_rect = mode1_button.get_rect(center=(width // 2, initial_y))
+    screen.blit(mode1_button, mode1_button_rect)
+
     # Blit mode2 button
-    screen.blit(mode2_button, mode2_button.get_rect(center=(width // 2, initial_y + button_spacing)))
+    mode2_button_rect = mode2_button.get_rect(center=(width // 2, initial_y + mode1_button.get_height()//4 + button_spacing))
+    screen.blit(mode2_button, mode2_button_rect)
+    
     # Blit home1 button
-    screen.blit(home1_button, home1_button.get_rect(center=(width // 2, initial_y + 2 * button_spacing)))
+    home1_button_rect = home1_button.get_rect(center=(width // 2, initial_y + mode1_button.get_height()//2 + 2 * button_spacing))
+    screen.blit(home1_button, home1_button_rect)
+
     pygame.display.update()
+
 
 # Initial state
 current_screen = "main"
