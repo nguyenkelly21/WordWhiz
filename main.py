@@ -21,8 +21,7 @@ mode1_button = pygame.image.load("img/mode1bttn.png")
 mode1_button_original = mode1_button.copy()
 mode2_button = pygame.image.load("img/mode2bttn.png") 
 mode2_button_original = mode2_button.copy()
-home1_button = pygame.image.load("img/home1.png") 
-home1_button_original = home1_button.copy()
+
 
 pygame.display.set_caption('WORDWHIZ')
 pygame.display.set_icon(icon)
@@ -52,7 +51,7 @@ def modescreen():
     screen.blit(background, (0, 0))
 
     # Define global variables for rect objects to enable collision detection
-    global mode1_button_rect, mode2_button_rect, home1_button_rect
+    global mode1_button_rect, mode2_button_rect
 
     # Calculate vertical spacing between buttons
     button_spacing = 50 
@@ -67,18 +66,14 @@ def modescreen():
     # Blit mode2 button
     mode2_button_rect = mode2_button.get_rect(center=(width // 2, initial_y + mode1_button.get_height()//4 + button_spacing))
     screen.blit(mode2_button, mode2_button_rect)
-    
-    # Blit home1 button
-    home1_button_rect = home1_button.get_rect(center=(width // 2, initial_y + mode1_button.get_height()//2 + 2 * button_spacing))
-    screen.blit(home1_button, home1_button_rect)
 
     pygame.display.update()
 
 
 # Initial state
 current_screen = "main"
-play_button_speed = 7  # Adjust speed 
-quit_button_speed = 7
+play_button_speed = 10  # Adjust speed 
+quit_button_speed = 10
 
 while True:
     for event in pygame.event.get():
@@ -93,10 +88,11 @@ while True:
                     current_screen = "mode1"  # Proceed to mode1
                 elif mode2_button_rect.collidepoint(event.pos):
                     current_screen = "mode2"  # Proceed to mode2
-                elif home1_button_rect.collidepoint(event.pos):
-                    current_screen = "main"  # Go back to main screen
             elif current_screen == "mode1" and home_button_rect.collidepoint(event.pos):
                 current_screen = "main"
+            elif current_screen != "main" and quit_button_rect.collidepoint(event.pos):
+                pygame.quit()
+                sys.exit()
 
     screen.blit(background, (0, 0))  # Draw the background image
 
