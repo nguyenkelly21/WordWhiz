@@ -8,20 +8,20 @@ width, height = 1080, 1080
 screen = pygame.display.set_mode((width, height))
 icon = pygame.image.load("img/icon.png")
 background = pygame.image.load("img/main.png")
-play_button = pygame.image.load("img/play.png")  # Load play button image
+play_button = pygame.image.load("img/play.png")  
 play_button_original = play_button.copy()  # Store original size for scaling
 play_button_rect = play_button.get_rect(center=(-200, height // 2 + 100))  # Start play button off the left side of the screen
 quit_button = pygame.image.load("img/quit.png")  # Load quit button image
 quit_button_original = quit_button.copy()
 quit_button_rect = quit_button.get_rect(center=(width + 200, height // 2 + 300))  # Start quit button off the right side of the screen
-home_button = pygame.image.load("img/home2.png")  # Load home button image
+home_button = pygame.image.load("img/home2.png")  
 home_button_original = home_button.copy()
 home_button_rect = home_button.get_rect(topright=(width - (-60), -90))  # Position home button at the top right corner
-mode1_button = pygame.image.load("img/mode1bttn.png")  # Load mode1 button image
+mode1_button = pygame.image.load("img/mode1bttn.png") 
 mode1_button_original = mode1_button.copy()
-mode2_button = pygame.image.load("img/mode2bttn.png")  # Load mode2 button image
+mode2_button = pygame.image.load("img/mode2bttn.png") 
 mode2_button_original = mode2_button.copy()
-home1_button = pygame.image.load("img/home1.png")  # Load home1 button image
+home1_button = pygame.image.load("img/home1.png") 
 home1_button_original = home1_button.copy()
 
 pygame.display.set_caption('WORDWHIZ')
@@ -34,14 +34,14 @@ def scale_button(button, factor):
 
 def mode1():
     """Function to switch to mode1 image."""
-    mode1_image = pygame.image.load("img/mode1.png")
+    mode1_image = pygame.image.load("img/mode1.jpg")
     screen.blit(mode1_image, mode1_image.get_rect(center=(width // 2, height // 2)))
     screen.blit(home_button, home_button_rect)  # Blit home button
     pygame.display.update()
 
 def mode2():
     """Function to switch to mode2 image."""
-    mode2_image = pygame.image.load("img/mode2.png")
+    mode2_image = pygame.image.load("img/mode2.jpg")
     screen.blit(mode2_image, mode2_image.get_rect(center=(width // 2, height // 2)))
     screen.blit(home_button, home_button_rect)  # Blit home button
     pygame.display.update()
@@ -77,8 +77,8 @@ def modescreen():
 
 # Initial state
 current_screen = "main"
-play_button_speed = 5  # Adjust speed 
-quit_button_speed = 5
+play_button_speed = 7  # Adjust speed 
+quit_button_speed = 7
 
 while True:
     for event in pygame.event.get():
