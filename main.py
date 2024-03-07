@@ -22,9 +22,11 @@ mode1_button_original = mode1_button.copy()
 mode2_button = pygame.image.load("img/mode2bttn.png") 
 mode2_button_original = mode2_button.copy()
 
-
 pygame.display.set_caption('WORDWHIZ')
 pygame.display.set_icon(icon)
+
+letter_bank_font = pygame.font.SysFont('Arial', 40)
+letter_bank = [chr(65 + i) for i in range(26)]
 
 def scale_button(button, factor):
     """Scale the button image by a factor."""
@@ -35,9 +37,31 @@ def mode1():
     """Function to switch to mode1 image."""
     mode1_image = pygame.image.load("img/mode1.jpg")
     screen.blit(mode1_image, mode1_image.get_rect(center=(width // 2, height // 2)))
+    draw_letter_bank()
     screen.blit(home_button, home_button_rect)  # Blit home button
     pygame.display.update()
+    
+def draw_letter_bank():
+    x = 70
+    y = height - 130  # Adjust the y-coordinate to move the letters to the bottom
+    spacing = 10
+    letter_width, letter_height = 40, 40  # Width and height of each letter box
+    num_letters = len(letter_bank)
+    total_width = num_letters * (letter_width + spacing)
 
+    # Draw the white rectangle for the inside of the border
+    pygame.draw.rect(screen, (255, 255, 255), (x, y, total_width, letter_height))
+
+    # Draw the border around the letters with increased size
+    border_size = 3
+    pygame.draw.rect(screen, (255, 105, 180), (x - border_size, y - border_size, total_width + border_size * 2, letter_height + border_size * 2), border_size)
+
+    pink_color = (255, 105, 180)
+    for letter in letter_bank:
+        text_surface = letter_bank_font.render(letter, True, pink_color)
+        screen.blit(text_surface, (x, y))
+        x += text_surface.get_width() + spacing
+        
 def mode2():
     """Function to switch to mode2 image."""
     mode2_image = pygame.image.load("img/mode2.jpg")
