@@ -1,5 +1,4 @@
 WORDS = [
-"cigar",
 "rebut",
 "sissy",
 "humph",
