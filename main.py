@@ -148,13 +148,11 @@ def draw_tiles():
 
     pygame.display.flip()  # Update the display
 
-def show_try_again_popup():
-    pygame.font.init()
-    font = pygame.font.SysFont(None, 50)
-    text = font.render("Try again tomorrow", True, (255, 0, 0))
-    screen.blit(text, (width // 2 - text.get_width() // 2, height // 2 - text.get_height() // 2))
+def show_popup(image_path):
+    popup_image = pygame.image.load(image_path)
+    screen.blit(popup_image, (width//2 - popup_image.get_width()//2, height//2 - popup_image.get_height()//2))
     pygame.display.update()
-    pygame.time.delay(2000)  # Show for 2 seconds
+    pygame.time.delay(5000)  
 
 # Initial state
 current_screen = "main"
@@ -202,8 +200,9 @@ while True:
                     if row_index < 5:
                         typed_words[row_index] = ""
                     else:
-                        show_try_again_popup()
-                        continue
+                        show_popup("img/youlost.jpg")
+                        pygame.quit()
+                        sys.exit()
                 if len(typed_words[row_index]) < 5:
                     letters_to_add.append(event.unicode.upper())
                     typed_words[row_index] += event.unicode.upper()
