@@ -125,7 +125,6 @@ def draw_letter_bank():
             letter_rect = letter_render.get_rect(center=(box_x + box_size // 2, box_y + box_size // 2))
             screen.blit(letter_render, letter_rect)
 
- 
 def draw_tiles():
     # Define starting position for tiles
     start_x = 300
@@ -140,13 +139,19 @@ def draw_tiles():
             # Draw the letter on the tile if available
             if row * 5 + col < len(letters_to_add):
                 letter = letters_to_add[row * 5 + col]
+                # Check if the letter is in the chosen word
+                if letter.upper() in chosen_word.upper():
+                    letter_color = (0, 255, 0)  # Green color for letters in the chosen word
+                else:
+                    letter_color = (0, 0, 0)  # Black color for other letters
+                letter_render = tile_font.render(letter, True, letter_color)
             else:
-                letter = ""  # No letter to display
-            letter_render = tile_font.render(letter, True, (0, 0, 0))
+                letter_render = tile_font.render("", True, (0, 0, 0))  # No letter to display
             letter_rect = letter_render.get_rect(center=(tile_x + tile_size // 2, tile_y + tile_size // 2))
             screen.blit(letter_render, letter_rect)
 
     pygame.display.flip()  # Update the display
+
 
 def show_popup(image_path):
     popup_image = pygame.image.load(image_path)
@@ -211,12 +216,8 @@ while True:
                     print("Chosen word:", chosen_word)
                     if typed_word.upper() == chosen_word.upper():
                         print("Typed word matches chosen word")
-                        screen.blit(you_win_image, you_win_image.get_rect(center=(width // 2, height // 2)))
-                        pygame.display.update()
-                        pygame.time.delay(2000)
                         chosen_word = choose_random_word()
-
-
+                        show_popup("img/youwin.jpg")
 
     screen.blit(background, (0, 0))  # Draw the background image
 
