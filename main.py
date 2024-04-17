@@ -197,8 +197,6 @@ while True:
                     letters_to_add.pop()
                 draw_letter_bank()
                 draw_tiles()
-            elif event.key == pygame.K_c:
-                letters_to_add.clear()
             elif event.unicode.upper() in letter_bank_letters:
                 row_index = len(letters_to_add) // 5
                 if len(letters_to_add) % 5 == 0:
