@@ -37,6 +37,9 @@ tile_spacing = 10
 tile_margin = 3
 tile_font = pygame.font.SysFont(None, 24)
 tile_color = (255, 255, 255)
+correct_tile_color = (0, 255, 0)  # Green
+wrong_position_tile_color = (255, 255, 0)  # Yellow
+wrong_letter_tile_color = (255, 0, 0)  # Red
 
 pygame.display.set_caption('WORDWHIZ')
 pygame.display.set_icon(icon)
@@ -134,23 +137,32 @@ def draw_tiles():
         for col in range(5):
             tile_x = start_x + col * (tile_size + tile_spacing)
             tile_y = start_y + row * (tile_size + tile_spacing)
-            pygame.draw.rect(screen, tile_color, (tile_x, tile_y, tile_size, tile_size))
-            pygame.draw.rect(screen, (0, 0, 0), (tile_x, tile_y, tile_size, tile_size), 2)
-            # Draw the letter on the tile if available
-            if row * 5 + col < len(letters_to_add):
-                letter = letters_to_add[row * 5 + col]
-                # Check if the letter is in the chosen word
-                if letter.upper() in chosen_word.upper():
-                    letter_color = (0, 255, 0)  # Green color for letters in the chosen word
-                else:
-                    letter_color = (0, 0, 0)  # Black color for other letters
-                letter_render = tile_font.render(letter, True, letter_color)
-            else:
-                letter_render = tile_font.render("", True, (0, 0, 0))  # No letter to display
-            letter_rect = letter_render.get_rect(center=(tile_x + tile_size // 2, tile_y + tile_size // 2))
-            screen.blit(letter_render, letter_rect)
 
-    pygame.display.flip()  # Update the display
+            # Check if the letter exists at this position
+            entered_letter = None
+            if row * 5 + col < len(letters_to_add):
+                entered_letter = letters_to_add[row * 5 + col]
+
+            # Determine the color of the tile
+            if entered_letter and entered_letter.upper() == chosen_word[col]:
+                color = correct_tile_color  # Green if correct letter in correct position
+            elif entered_letter and entered_letter.upper() in chosen_word:
+                color = wrong_position_tile_color  # Yellow if correct letter in wrong position
+            elif entered_letter:
+                color = wrong_letter_tile_color  # Red if incorrect letter
+            else:
+                color = tile_color  # Default color
+
+            pygame.draw.rect(screen, color, (tile_x, tile_y, tile_size, tile_size))
+            pygame.draw.rect(screen, (0, 0, 0), (tile_x, tile_y, tile_size, tile_size), 2)
+
+            # Redraw letter if exists
+            if entered_letter:
+                letter_render = tile_font.render(entered_letter, True, (0, 0, 0))
+                letter_rect = letter_render.get_rect(center=(tile_x + tile_size // 2, tile_y + tile_size // 2))
+                screen.blit(letter_render, letter_rect)
+
+    pygame.display.update()
 
 
 def show_popup(image_path):
@@ -159,17 +171,16 @@ def show_popup(image_path):
     pygame.display.update()
     pygame.time.delay(5000)  
 
+def all_tiles_filled():
+    return len(letters_to_add) == 25
+ 
 # Initial state
 current_screen = "main"
-
-# Create a list to store typed words for each row
 typed_words = ["", "", "", "", ""]
-
 letters_to_add = []  # letters being added as user types
-
-# Choose a random word
 chosen_word = choose_random_word()
-print("Word:", chosen_word)
+print("Chosen word: ", chosen_word)
+typed_word = ""
 
 while True:
     for event in pygame.event.get():
@@ -177,7 +188,7 @@ while True:
             pygame.quit()
             sys.exit()
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            # Check button clicks based on the current screen
+            # Button click handling code...
             if current_screen == "main" and play_button_rect.collidepoint(event.pos):
                 current_screen = "modescreen"
             elif current_screen == "modescreen":
@@ -185,13 +196,13 @@ while True:
                     current_screen = "mode1"
                 elif mode2_button_rect.collidepoint(event.pos):
                     current_screen = "mode2"
-            elif current_screen in ["mode1", "mode2"] and home_button.get_rect(topright=(width - 50, 50)).collidepoint(
-                    event.pos):  # Check if home button is clicked
+            elif current_screen in ["mode1", "mode2"] and home_button.get_rect(topright=(width - 50, 50)).collidepoint(event.pos):  
                 current_screen = "main"
             elif current_screen == "main" and quit_button_rect.collidepoint(event.pos):
                 pygame.quit()
                 sys.exit()
         elif event.type == pygame.KEYDOWN:
+            # Key press handling code...
             if event.key == pygame.K_BACKSPACE:
                 if len(letters_to_add) > 0:
                     letters_to_add.pop()
@@ -199,26 +210,35 @@ while True:
                 draw_tiles()
             elif event.unicode.upper() in letter_bank_letters:
                 row_index = len(letters_to_add) // 5
-                if len(letters_to_add) % 5 == 0:
-                    if row_index < 5:
-                        typed_words[row_index] = ""
-                    else:
-                        show_popup("img/youlost.jpg")
-                        pygame.quit()
-                        sys.exit()
-                if len(typed_words[row_index]) < 5:
+                if len(typed_words[row_index]) <= 5:
                     letters_to_add.append(event.unicode.upper())
                     typed_words[row_index] += event.unicode.upper()
                     typed_word = "".join(filter(str.isalpha, typed_words[row_index]))
                     print("Typed word (Row", row_index + 1, "):", typed_word)
-                    print("Chosen word:", chosen_word)
                     if typed_word.upper() == chosen_word.upper():
                         print("Typed word matches chosen word")
                         chosen_word = choose_random_word()
                         show_popup("img/youwin.jpg")
+                        print("Chosen word:", chosen_word)  
+                    elif len(letters_to_add) % 5 == 0:
+                        if row_index < 5 and chosen_word != typed_word:
+                            typed_words[row_index] = ""
+                        else:
+                            show_popup("img/youlost.jpg")
+                            pygame.quit()
+                            sys.exit()
 
+    # Update typed word
+    typed_word = "".join(filter(str.isalpha, "".join(typed_words)))
+
+    # Check if all tiles are filled and typed word doesn't match chosen word
+    if all_tiles_filled() and chosen_word.upper() != typed_word.upper():
+        show_popup("img/youlost.jpg")
+        pygame.quit()
+        sys.exit()
+
+    # Drawing code...
     screen.blit(background, (0, 0))  # Draw the background image
-
     if current_screen == "main":
         screen.blit(play_button, play_button_rect)
         screen.blit(quit_button, quit_button_rect)
