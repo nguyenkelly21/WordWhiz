@@ -280,12 +280,6 @@ while True:
                             show_popup("img/youlost.jpg")
                             pygame.quit()
                             sys.exit()
- 
-    # Check if all tiles are filled and typed word doesn't match chosen word
-    if all_tiles_filled() and chosen_word.upper() != typed_word.upper():
-        show_popup("img/youlost.jpg")
-        pygame.quit()
-        sys.exit()
 
     # Drawing code...
     screen.blit(background, (0, 0))  # Draw the background image
