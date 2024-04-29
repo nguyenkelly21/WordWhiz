@@ -5,10 +5,10 @@ import random
 pygame.init()
 
 # Constants
-width, height = 1080,1080
+width, height = 1080, 1080
 screen = pygame.display.set_mode((width, height))
 icon = pygame.image.load("img/icon.png")
-background = pygame.image.load("img/main.png")
+background = pygame.image.load("img/main.jpg")
 play_button = pygame.image.load("img/play.png")
 play_button_original = play_button.copy()
 play_button_rect = play_button.get_rect(center=(width // 2, height // 2 + 100))
@@ -23,7 +23,9 @@ home_button = pygame.image.load("img/home2.png")
 home_button_original = home_button.copy()
 home_button_size = (300, 300)
 home_button = pygame.transform.scale(home_button, home_button_size)  # Scale down the home button image
-you_win_image = pygame.image.load("img/youwin.jpg")
+home3_button = pygame.image.load("img/home3.png")
+home3_button_original = home3_button.copy()
+home3_button = pygame.transform.scale(home3_button, home_button_size)  # Scale down the home3 button image
 
 # Letter bank settings
 letter_bank_font = pygame.font.SysFont(None, 36)
@@ -48,7 +50,21 @@ pygame.display.set_icon(icon)
 def choose_random_word():
     with open("words.py", "r") as file:
         words = file.readlines()
-        return random.choice(words).strip()
+        chosen_word = random.choice(words).strip()
+        # Remove any quotation marks from the chosen word
+        chosen_word = chosen_word.replace('"', '')
+        print("Chosen word:", chosen_word)  
+        return chosen_word
+
+# Function to choose a random word from words2.py (Mode 2)
+def choose_random_word_mode2():
+    with open("words2.py", "r") as file:
+        words = file.readlines()
+        chosen_word = random.choice(words).strip()
+        # Remove any quotation marks from the chosen word
+        chosen_word = chosen_word.replace('"', '')
+        print("Chosen word (Mode 2):", chosen_word)  
+        return chosen_word
 
 # Pop-up message function
 def show_popup(message):
@@ -70,7 +86,7 @@ def mode1():
         draw_letter_bank()
         draw_tiles()
         # Blit home button on top right corner
-        screen.blit(home_button, home_button.get_rect(topright=(width - 50, 50)))
+        screen.blit(home_button, home_button.get_rect(topright=(width - 30, 10)))
 
 def mode2():
     mode2_image = pygame.image.load("img/mode2.jpg")
@@ -78,9 +94,10 @@ def mode2():
     if current_screen == "mode2":
         draw_letter_bank()
         draw_tiles()
-        # Blit home button on top right corner
-        screen.blit(home_button, home_button.get_rect(topright=(width - 50, 50)))
+        # Blit home3 button on top right corner
+        screen.blit(home3_button, home3_button.get_rect(topright=(width - 30, 10)))
 
+# Adjust mode screen function
 def modescreen():
     screen.blit(background, (0, 0))
 
@@ -127,6 +144,34 @@ def draw_letter_bank():
             letter_render = letter_bank_font.render(letter, True, (0, 0, 0))  # White color for letters
             letter_rect = letter_render.get_rect(center=(box_x + box_size // 2, box_y + box_size // 2))
             screen.blit(letter_render, letter_rect)
+             
+def check_win_conditions():
+    for row in range(5):
+        all_correct = True  # Flag to track if all tiles in the row are correct
+        for col in range(5):
+            if row * 5 + col < len(letters_to_add):  
+                if letters_to_add[row * 5 + col].upper() != chosen_word[col].upper():
+                    all_correct = False  # If any tile is not green, set the flag to False
+                    break  
+            else:
+                all_correct = False  # If any tile is not filled, set the flag to False
+                break   
+        if all_correct:
+            if current_screen == "mode2":   
+                show_popup("img/youwin2.jpg")  
+            else:
+                show_popup("img/youwin.jpg")   
+            return  
+    
+    # If all tiles are filled and the typed word doesn't match the chosen word
+    if all_tiles_filled() and chosen_word.upper() != typed_word.upper():
+        if current_screen == "mode2":   
+            show_popup("img/youlost2.jpg")  
+        else:
+            show_popup("img/youlost.jpg") 
+        pygame.quit()
+        sys.exit()
+
 
 def draw_tiles():
     # Define starting position for tiles
@@ -162,24 +207,28 @@ def draw_tiles():
                 letter_rect = letter_render.get_rect(center=(tile_x + tile_size // 2, tile_y + tile_size // 2))
                 screen.blit(letter_render, letter_rect)
 
-    pygame.display.update()
+    # Check for win conditions after drawing all tiles
+    check_win_conditions()
 
+    pygame.display.update()
 
 def show_popup(image_path):
     popup_image = pygame.image.load(image_path)
     screen.blit(popup_image, (width//2 - popup_image.get_width()//2, height//2 - popup_image.get_height()//2))
     pygame.display.update()
-    pygame.time.delay(5000)  
+    pygame.time.delay(2000)  # Show for 2 seconds
+    pygame.quit()
+    sys.exit()
+
 
 def all_tiles_filled():
     return len(letters_to_add) == 25
- 
+
 # Initial state
 current_screen = "main"
 typed_words = ["", "", "", "", ""]
 letters_to_add = []  # letters being added as user types
-chosen_word = choose_random_word()
-print("Chosen word: ", chosen_word)
+chosen_word = ""
 typed_word = ""
 
 while True:
@@ -194,9 +243,13 @@ while True:
             elif current_screen == "modescreen":
                 if mode1_button_rect.collidepoint(event.pos):
                     current_screen = "mode1"
+                    chosen_word = choose_random_word()  # Choose word from words.py for mode 1
                 elif mode2_button_rect.collidepoint(event.pos):
                     current_screen = "mode2"
+                    chosen_word = choose_random_word_mode2()  # Choose word from words2.py for mode 2
             elif current_screen in ["mode1", "mode2"] and home_button.get_rect(topright=(width - 50, 50)).collidepoint(event.pos):  
+                current_screen = "main"
+            elif current_screen == "mode2" and home3_button.get_rect(topright=(width - 50, 50)).collidepoint(event.pos):
                 current_screen = "main"
             elif current_screen == "main" and quit_button_rect.collidepoint(event.pos):
                 pygame.quit()
@@ -214,23 +267,20 @@ while True:
                     letters_to_add.append(event.unicode.upper())
                     typed_words[row_index] += event.unicode.upper()
                     typed_word = "".join(filter(str.isalpha, typed_words[row_index]))
-                    print("Typed word (Row", row_index + 1, "):", typed_word)
                     if typed_word.upper() == chosen_word.upper():
                         print("Typed word matches chosen word")
-                        chosen_word = choose_random_word()
+                        chosen_word = choose_random_word() if current_screen == "mode1" else choose_random_word_mode2()
                         show_popup("img/youwin.jpg")
                         print("Chosen word:", chosen_word)  
                     elif len(letters_to_add) % 5 == 0:
                         if row_index < 5 and chosen_word != typed_word:
                             typed_words[row_index] = ""
+                            print("Typed word :", typed_word)
                         else:
                             show_popup("img/youlost.jpg")
                             pygame.quit()
                             sys.exit()
-
-    # Update typed word
-    typed_word = "".join(filter(str.isalpha, "".join(typed_words)))
-
+ 
     # Check if all tiles are filled and typed word doesn't match chosen word
     if all_tiles_filled() and chosen_word.upper() != typed_word.upper():
         show_popup("img/youlost.jpg")
