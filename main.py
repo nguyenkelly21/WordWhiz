@@ -5,38 +5,34 @@ import random
 pygame.init()
 
 # Constants
+clock = pygame.time.Clock()
 width, height = 1080, 1080
 screen = pygame.display.set_mode((width, height))
 icon = pygame.image.load("img/icon.png")
 background = pygame.image.load("img/main.jpg")
 play_button = pygame.image.load("img/play.png")
-play_button_original = play_button.copy()
+play_button_size = quit_button_size = mode1_button_size = mode2_button_size = (width // 3, height // 8)  # Set the desired size of the button
+play_button = pygame.transform.scale(play_button, play_button_size)  # Scale down the button image
 play_button_rect = play_button.get_rect(center=(width // 2, height // 2 + 100))
 quit_button = pygame.image.load("img/quit.png")
+quit_button = pygame.transform.scale(quit_button, quit_button_size)
 quit_button_rect = quit_button.get_rect(center=(width // 2, height // 2 + 300))
-quit_button_original = quit_button.copy()
-mode1_button = pygame.image.load("img/mode1bttn.png")
-mode2_button = pygame.image.load("img/mode2bttn.png")
-mode1_button_original = mode1_button.copy()
-mode2_button_original = mode2_button.copy()
-home_button = pygame.image.load("img/home2.png")
-home_button_original = home_button.copy()
+mode1_button = pygame.image.load("img/mode1.png")
+mode1_button = pygame.transform.scale(mode1_button, mode1_button_size)
+mode2_button = pygame.image.load("img/mode2.png")
+mode2_button = pygame.transform.scale(mode2_button, mode2_button_size)
+home_button = pygame.image.load("img/home.png")
 home_button_size = (300, 300)
 home_button = pygame.transform.scale(home_button, home_button_size)  # Scale down the home button image
-home3_button = pygame.image.load("img/home3.png")
-home3_button_original = home3_button.copy()
-home3_button = pygame.transform.scale(home3_button, home_button_size)  # Scale down the home3 button image
 
 # Letter bank settings
 letter_bank_font = pygame.font.SysFont(None, 36)
-letter_bank_color = (255, 255, 255)
 letter_bank_spacing = 20
 letter_bank_letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 # Tile settings
 tile_size = 90
 tile_spacing = 10
-tile_margin = 3
 tile_font = pygame.font.SysFont(None, 24)
 tile_color = (255, 255, 255)
 correct_tile_color = (0, 255, 0)  # Green
@@ -66,19 +62,6 @@ def choose_random_word_mode2():
         print("Chosen word (Mode 2):", chosen_word)  
         return chosen_word
 
-# Pop-up message function
-def show_popup(message):
-    pygame.font.init()
-    font = pygame.font.SysFont(None, 100)
-    text = font.render(message, True, (255, 0, 0))
-    screen.blit(text, (width//2 - text.get_width()//2, height//2 - text.get_height()//2))
-    pygame.display.update()
-    pygame.time.delay(2000)  # Show for 2 seconds
-
-def scale_button(button, factor):
-    button_rect = button.get_rect(center=button_rect.center)
-    return pygame.transform.scale(button, (int(button_rect.width * factor), int(button_rect.height * factor)))
-
 def mode1():
     mode1_image = pygame.image.load("img/mode1.jpg")
     screen.blit(mode1_image, mode1_image.get_rect(center=(width // 2, height // 2)))
@@ -95,17 +78,14 @@ def mode2():
         draw_letter_bank()
         draw_tiles()
         # Blit home3 button on top right corner
-        screen.blit(home3_button, home3_button.get_rect(topright=(width - 30, 10)))
+        screen.blit(home_button, home_button.get_rect(topright=(width - 30, 10)))
+    pygame.display.flip()
 
 # Adjust mode screen function
 def modescreen():
     screen.blit(background, (0, 0))
 
     global mode1_button_rect, mode2_button_rect
-
-    button_spacing = 50
-
-    initial_y = height // 2
 
     mode1_button_rect = mode1_button.get_rect(center=(width // 2, height // 2 + 100))
     mode2_button_rect = mode2_button.get_rect(center=(width // 2, height // 2 + 300))
@@ -141,7 +121,7 @@ def draw_letter_bank():
             pygame.draw.rect(screen, box_color, (box_x, box_y, box_size, box_size), border_thickness)
 
             # Draw the letter
-            letter_render = letter_bank_font.render(letter, True, (0, 0, 0))  # White color for letters
+            letter_render = letter_bank_font.render(letter, True, (0, 0, 0))  # Black color for letters
             letter_rect = letter_render.get_rect(center=(box_x + box_size // 2, box_y + box_size // 2))
             screen.blit(letter_render, letter_rect)
              
@@ -209,7 +189,6 @@ def draw_tiles():
 
     # Check for win conditions after drawing all tiles
     check_win_conditions()
-
     pygame.display.update()
 
 def show_popup(image_path):
@@ -219,7 +198,6 @@ def show_popup(image_path):
     pygame.time.delay(2000)  # Show for 2 seconds
     pygame.quit()
     sys.exit()
-
 
 def all_tiles_filled():
     return len(letters_to_add) == 25
@@ -232,12 +210,13 @@ chosen_word = ""
 typed_word = ""
 
 while True:
+    clock.tick(30)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            # Button click handling code...
+            # Button click handling code
             if current_screen == "main" and play_button_rect.collidepoint(event.pos):
                 current_screen = "modescreen"
             elif current_screen == "modescreen":
@@ -249,13 +228,11 @@ while True:
                     chosen_word = choose_random_word_mode2()  # Choose word from words2.py for mode 2
             elif current_screen in ["mode1", "mode2"] and home_button.get_rect(topright=(width - 50, 50)).collidepoint(event.pos):  
                 current_screen = "main"
-            elif current_screen == "mode2" and home3_button.get_rect(topright=(width - 50, 50)).collidepoint(event.pos):
-                current_screen = "main"
             elif current_screen == "main" and quit_button_rect.collidepoint(event.pos):
                 pygame.quit()
                 sys.exit()
         elif event.type == pygame.KEYDOWN:
-            # Key press handling code...
+            # Key press handling code
             if event.key == pygame.K_BACKSPACE:
                 if len(letters_to_add) > 0:
                     letters_to_add.pop()
@@ -281,7 +258,7 @@ while True:
                             pygame.quit()
                             sys.exit()
 
-    # Drawing code...
+    # Drawing code
     screen.blit(background, (0, 0))  # Draw the background image
     if current_screen == "main":
         screen.blit(play_button, play_button_rect)
@@ -293,4 +270,4 @@ while True:
     elif current_screen == "mode2":
         mode2()
 
-    pygame.display.update()
+    pygame.display.flip()
