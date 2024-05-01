@@ -70,6 +70,7 @@ def mode1():
         draw_tiles()
         # Blit home button on top right corner
         screen.blit(home_button, home_button.get_rect(topright=(width - 30, 10)))
+    pygame.display.flip()
 
 def mode2():
     mode2_image = pygame.image.load("img/mode2.jpg")
