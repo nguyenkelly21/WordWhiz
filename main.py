@@ -229,6 +229,10 @@ while True:
                     chosen_word = choose_random_word_mode2()  # Choose word from words2.py for mode 2
             elif current_screen in ["mode1", "mode2"] and home_button.get_rect(topright=(width - 50, 50)).collidepoint(event.pos):  
                 current_screen = "main"
+                typed_words = ["", "", "", "", ""]  # Reset typed_words to empty list
+                letters_to_add = []  # Reset letters_to_add to empty list
+                chosen_word = ""  # Reset chosen_word
+                typed_word = ""
             elif current_screen == "main" and quit_button_rect.collidepoint(event.pos):
                 pygame.quit()
                 sys.exit()
