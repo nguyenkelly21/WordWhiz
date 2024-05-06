@@ -96,6 +96,7 @@ def modescreen():
     pygame.display.update()
  
 def draw_letter_bank():
+    screen.blit(home_button, home_button.get_rect(topright=(width - 30, 10)))
     box_size = 50
     border_thickness = 2
     x_offset = 215
@@ -152,6 +153,7 @@ def check_win_conditions():
 
 
 def draw_tiles():
+    screen.blit(home_button, home_button.get_rect(topright=(width - 30, 10)))
     # Define starting position for tiles
     start_x = 300
     start_y = 300
