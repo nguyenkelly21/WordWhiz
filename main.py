@@ -237,12 +237,6 @@ while True:
                 pygame.quit()
                 sys.exit()
         elif event.type == pygame.KEYDOWN:
-            # Key press handling code
-            #if event.key == pygame.K_BACKSPACE:
-               # if len(letters_to_add) > 0:
-                   # letters_to_add.pop()
-               # draw_letter_bank()
-                #draw_tiles()
             if event.unicode.upper() in letter_bank_letters:
                 row_index = len(letters_to_add) // 5
                 if len(typed_words[row_index]) <= 5:
@@ -276,3 +270,4 @@ while True:
         mode2()
 
     pygame.display.flip()
+
