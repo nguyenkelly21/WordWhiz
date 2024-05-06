@@ -118,10 +118,7 @@ def draw_letter_bank():
             else:
                 box_color = (255, 255, 255)  # Default white color
 
-            # Draw the box
             pygame.draw.rect(screen, box_color, (box_x, box_y, box_size, box_size), border_thickness)
-
-            # Draw the letter
             letter_render = letter_bank_font.render(letter, True, (0, 0, 0))  # Black color for letters
             letter_rect = letter_render.get_rect(center=(box_x + box_size // 2, box_y + box_size // 2))
             screen.blit(letter_render, letter_rect)
@@ -197,7 +194,6 @@ def show_popup(image_path):
     screen.blit(popup_image, (width//2 - popup_image.get_width()//2, height//2 - popup_image.get_height()//2))
     pygame.display.update()
     pygame.time.delay(2000)  # Show for 2 seconds
-    pygame.quit()
     sys.exit()
 
 def all_tiles_filled():
